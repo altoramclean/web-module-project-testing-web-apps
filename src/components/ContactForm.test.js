@@ -77,9 +77,55 @@ expect(errorMessage).toBeInTheDocument();
 
 test('renders all firstName, lastName and email text when submitted. Does NOT render message if message is not submitted.', async () => {
     render(<ContactForm/>);
+    const firstNameField = screen.getByLabelText(/first name*/i);
+    const lastNameField = screen.getByLabelText(/last name*/i);
+    const emailField = screen.getByLabelText(/email*/i);
+
+    userEvent.type(firstNameField, "altora");
+    userEvent.type(lastNameField, "mclean");
+    userEvent.type(emailField, "amclean@aol.com");
+
+    const submitButton = screen.getByRole("button");
+    userEvent.click(submitButton);
+
+    await waitFor(() => {
+        const firstnameDisplay = screen.queryByText("altora");
+        const lastnameDisplay= screen.queryByText("mclean");
+        const emailDisplay = screen.queryByText("amclean@aol.com");
+        const messageDisplay = screen.queryByTestId("messageDisplay");
+
+        expect(firstnameDisplay).toBeInTheDocument();
+        expect(lastnameDisplay).toBeInTheDocument();
+        expect(emailDisplay).toBeInTheDocument();
+        expect(messageDisplay).not.toBeInTheDocument();
+    });
 });
 
 test('renders all fields text when all fields are submitted.', async () => {
     render(<ContactForm/>);
+    const firstNameField = screen.getByLabelText(/first name*/i);
+    const lastNameField = screen.getByLabelText(/last name*/i);
+    const emailField = screen.getByLabelText(/email*/i);
+    const messageField = screen.getByLabelText(/Message/i);
+
+    userEvent.type(firstNameField, "altora");
+    userEvent.type(lastNameField, "mclean");
+    userEvent.type(emailField, "amclean@aol.com");
+    userEvent.type(messageField, "message");
+
+    const submitButton = await screen.findByRole("button");
+    userEvent.click(submitButton);
+
+    await waitFor(() => {
+        const firstnameDisplay = screen.queryByText("altora");
+        const lastnameDisplay= screen.queryByText("mclean");
+        const emailDisplay = screen.queryByText("amclean@aol.com");
+        const messageDisplay = screen.queryByTestId(/message/i);
+
+        expect(firstnameDisplay).toBeInTheDocument();
+        expect(lastnameDisplay).toBeInTheDocument();
+        expect(emailDisplay).toBeInTheDocument();
+        expect(messageDisplay).toBeInTheDocument();
+    });
 
 });
