@@ -12,21 +12,45 @@ test('renders without errors', ()=>{
 test('renders the contact form header', ()=> {
     render(<ContactForm/>);
     
-    const headerElement = screen.queryByText(/Contact Form/);
-    console.log(headerElement);
+    const headerElement = screen.getByText(/contact form/i)
     
+    expect(headerElement).toBeInTheDocument();
+    expect(headerElement).toBeTruthy();
+    expect(headerElement).toHaveTextContent(/contact form/i);
 });
 
 test('renders ONE error message if user enters less then 5 characters into firstname.', async () => {
-    
+    render(<ContactForm/>);
+
+    const firstNameField = screen.getByLabelText(/First Name*/i);
+    userEvent.type(firstNameField, "123");
+const errorMessages = await screen.findAllByTestId('error');
+expect(errorMessages).toHaveLength(1);
 });
 
 test('renders THREE error messages if user enters no values into any fields.', async () => {
+    render(<ContactForm/>);
+const submitButton = screen.getByRole("button");
+userEvent.click(submitButton);
+
+await waitFor(() => {
+    const errorMessages = screen.queryAllByTestId("error");
+    expect(errorMessages).toHaveLength(3);
+})
     
 });
 
 test('renders ONE error message if user enters a valid first name and last name but no email.', async () => {
-    
+    render(<ContactForm/>)
+    const firstName = screen.getByLabelText(/first name/i);
+    userEvent.type(firstName, "altora");
+    const lastName = screen.getByLabelText(/last name/i);
+    userEvent.type(lastName, "mclean");
+    const button = screen.getByRole("button");
+    userEvent.click(button);
+
+    const errorMessages = await screen.queryAllByTestId("error");
+    expect(errorMessages).toHaveLength(1);
 });
 
 test('renders "email must be a valid email address" if an invalid email is entered', async () => {
